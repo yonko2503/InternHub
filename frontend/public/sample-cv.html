@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV Ứng Viên - Nguyễn Văn An (UET - ĐHQGHN)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --bg: #f8fafc;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      background: #f1f5f9;
+      color: var(--text-main);
+      padding: 40px 20px;
+      line-height: 1.6;
+    }
+    .cv-container {
+      max-width: 850px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .cv-header {
+      background: linear-gradient(135deg, #312e81 0%, #4338ca 50%, #6366f1 100%);
+      color: #ffffff;
+      padding: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .cv-title h1 { font-size: 1.9rem; font-weight: 800; margin-bottom: 6px; }
+    .cv-title p { font-size: 1.05rem; opacity: 0.9; }
+    .cv-badge {
+      background: rgba(255, 255, 255, 0.18);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-block;
+      margin-top: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .cv-body { padding: 40px; }
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #e0e7ff;
+      padding-bottom: 8px;
+      margin: 28px 0 16px;
+    }
+    .section-title:first-child { margin-top: 0; }
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px 24px;
+      font-size: 0.92rem;
+    }
+    .info-item strong { color: var(--text-muted); font-weight: 600; }
+    .skills-box {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .skill-pill {
+      background: #eff6ff;
+      color: #2563eb;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      border: 1px solid #bfdbfe;
+    }
+    .project-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .project-title { font-weight: 700; font-size: 1rem; color: #1e293b; margin-bottom: 4px; }
+    .project-role { font-size: 0.85rem; color: var(--primary); font-weight: 600; margin-bottom: 8px; }
+    .project-desc { font-size: 0.88rem; color: #475569; }
+    .print-btn {
+      background: #ffffff;
+      color: var(--primary);
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .print-btn:hover { background: #f8fafc; }
+  </style>
+</head>
+<body>
+  <div class="cv-container">
+    <div class="cv-header">
+      <div class="cv-title">
+        <h1>Nguyễn Văn An</h1>
+        <p>Sinh viên Khoa Công nghệ Thông tin - UET</p>
+        <div class="cv-badge">🎓 GPA: 3.68 / 4.0 • Niên khóa 2021 - 2025</div>
+      </div>
+      <div>
+        <button class="print-btn" onclick="window.print()">🖨️ In / Lưu PDF</button>
+      </div>
+    </div>
+
+    <div class="cv-body">
+      <h3 class="section-title">1. Thông tin cá nhân & Liên hệ</h3>
+      <div class="info-grid">
+        <div class="info-item"><strong>Mã sinh viên:</strong> 21020001</div>
+        <div class="info-item"><strong>Trường:</strong> ĐH Công nghệ - ĐHQGHN (UET)</div>
+        <div class="info-item"><strong>Email:</strong> 21020001@vnu.edu.vn</div>
+        <div class="info-item"><strong>Số điện thoại:</strong> 0912 345 678</div>
+        <div class="info-item"><strong>Chuyên ngành:</strong> Công nghệ Thông tin (Chất lượng cao)</div>
+        <div class="info-item"><strong>Tốt nghiệp dự kiến:</strong> 06/2025</div>
+      </div>
+
+      <h3 class="section-title">2. Kỹ năng chuyên môn</h3>
+      <div class="skills-box">
+        <span class="skill-pill">Java</span>
+        <span class="skill-pill">Spring Boot</span>
+        <span class="skill-pill">Spring Data JPA</span>
+        <span class="skill-pill">Spring Security (JWT)</span>
+        <span class="skill-pill">MySQL</span>
+        <span class="skill-pill">RESTful API</span>
+        <span class="skill-pill">Docker</span>
+        <span class="skill-pill">ReactJS</span>
+        <span class="skill-pill">Git & GitHub</span>
+      </div>
+
+      <h3 class="section-title">3. Dự án học tập & Thực hành</h3>
+      <div class="project-card">
+        <div class="project-title">InternHub – Hệ thống Tuyển dụng & Quản lý Thực tập sinh UET</div>
+        <div class="project-role">Vai trò: Backend Developer (Java Spring Boot + MySQL + ReactJS)</div>
+        <p class="project-desc">
+          • Xây dựng hệ thống REST API phân quyền 3 roles (Student, Company, Admin) sử dụng JWT.<br>
+          • Thiết kế cơ sở dữ liệu 9 bảng quản lý tin tuyển dụng, hồ sơ CV và quy trình ứng tuyển.<br>
+          • Tối ưu hiệu năng truy vấn dữ liệu và đồng bộ trạng thái thời gian thực.
+        </p>
+      </div>
+
+      <div class="project-card">
+        <div class="project-title">E-Commerce Microservices Platform</div>
+        <div class="project-role">Đồ án môn Kiến trúc phần mềm phân tán</div>
+        <p class="project-desc">
+          • Triển khai kiến trúc Microservices với Spring Cloud, API Gateway và Eureka Server.<br>
+          • Sử dụng Docker Compose để đóng gói và vận hành các dịch vụ.
+        </p>
+      </div>
+
+      <h3 class="section-title">4. Chứng chỉ & Hoạt động</h3>
+      <div class="info-grid">
+        <div class="info-item"><strong>Ngoại ngữ:</strong> IELTS 7.0 (2024)</div>
+        <div class="info-item"><strong>Học bổng:</strong> Học bổng Khuyến khích học tập UET 4 kỳ liên tiếp</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
