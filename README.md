@@ -3,7 +3,7 @@
 > **Dự án thuộc Học phần Thực hành Doanh nghiệp – Trường Đại học Công nghệ, Đại học Quốc gia Hà Nội (UET - VNU)**  
 > **Tác giả / Mã sinh viên**: `23021642`  
 > **Email**: `23021642@vnu.edu.vn`  
-> **Công nghệ**: Spring Boot 3 (Java 17) + Spring Security (JWT) + React 19 (Vite) + Tailwind/Vanilla CSS + MySQL / H2 Database
+> **Công nghệ**: Spring Boot 3 (Java 17) + Spring Security (JWT) + React 19 (Vite) + Tailwind/Vanilla CSS + MySQL Database
 
 ---
 
@@ -64,7 +64,7 @@
 ### Công nghệ sử dụng
 - **Frontend**: React 19, Vite, Lucide Icons, Vanilla/Modern CSS Design System (Glassmorphism, Responsive UI).
 - **Backend**: Java 17, Spring Boot 3.x, Spring Data JPA, Spring Security, JWT (JSON Web Token), Lombok, Maven.
-- **Database**: MySQL 8.0+ / H2 In-Memory Database.
+- **Database**: MySQL 8.0+
 
 ### Cấu trúc dự án
 ```text
@@ -101,14 +101,26 @@ internhub/
 
 ## 🚀 4. Hướng dẫn cài đặt & Khởi chạy dự án
 
-### Yêu cầu tiên quyết
+### Yêu cầu môi trường
 - **Java JDK 17** trở lên.
 - **Node.js 18** trở lên & `npm`.
-- *(Tùy chọn)* **MySQL 8.0+** (Mặc định dự án đã tích hợp sẵn H2 In-Memory Database tự tạo dữ liệu mẫu, có thể chạy ngay mà không cần cấu hình thêm MySQL).
+- **MySQL 8.0** trở lên.
 
 ---
 
-### Bước 1: Khởi chạy Backend (Spring Boot API)
+### Bước 1: Khởi tạo Cơ sở dữ liệu MySQL
+
+1. Mở **MySQL Workbench** hoặc **MySQL Command Line Client**.
+2. Thực thi script khởi tạo bảng và dữ liệu mẫu có sẵn tại file [database/schema.sql](file:///d:/internhub/database/schema.sql):
+```sql
+CREATE DATABASE IF NOT EXISTS internhub CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE internhub;
+-- Chạy toàn bộ nội dung file database/schema.sql
+```
+
+---
+
+### Bước 2: Khởi chạy Backend (Spring Boot API)
 
 Mở terminal tại thư mục `backend`:
 
@@ -118,16 +130,10 @@ cd d:\internhub\backend
 ```
 
 - **Backend REST API**: `http://localhost:8080`
-- **H2 Database Console**: `http://localhost:8080/h2-console`
-  - *JDBC URL*: `jdbc:h2:mem:internhubdb`
-  - *User*: `sa`
-  - *Password*: *(để trống)*
-
-*(Ghi chú: Nếu muốn kết nối cơ sở dữ liệu MySQL thật, mở file `backend/src/main/resources/application.properties`, bỏ chú thích cấu hình MySQL và chạy file `database/schema.sql` trong MySQL Workbench)*.
 
 ---
 
-### Bước 2: Khởi chạy Frontend (React + Vite)
+### Bước 3: Khởi chạy Frontend (React + Vite)
 
 Mở một cửa sổ terminal khác tại thư mục `frontend`:
 
