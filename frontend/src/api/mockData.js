@@ -1,0 +1,339 @@
+export const INITIAL_SKILLS = [
+  'Java', 'Spring Boot', 'ReactJS', 'TypeScript', 'JavaScript',
+  'MySQL', 'PostgreSQL', 'Docker', 'Python', 'NodeJS',
+  'Git', 'REST API', 'TailwindCSS', 'HTML/CSS', 'Figma',
+  'Kubernetes', 'AWS', 'Machine Learning', 'Microservices'
+];
+
+export function getCompanyLogoUrl(companyName, rawLogoUrl) {
+  const name = (companyName || '').toLowerCase();
+
+  // If company is Viettel, strictly return Viettel logo or uploaded custom Viettel avatar
+  if (name.includes('viettel')) {
+    if (rawLogoUrl && (rawLogoUrl.startsWith('data:') || rawLogoUrl.includes('viettel'))) {
+      return rawLogoUrl;
+    }
+    return '/logos/viettel.svg';
+  }
+
+  // If company is FPT, strictly return FPT logo or uploaded custom FPT avatar
+  if (name.includes('fpt')) {
+    if (rawLogoUrl && (rawLogoUrl.startsWith('data:') || rawLogoUrl.includes('fpt'))) {
+      return rawLogoUrl;
+    }
+    return '/logos/fpt.svg';
+  }
+
+  // If company is TechCorp
+  if (name.includes('techcorp')) {
+    if (rawLogoUrl && (rawLogoUrl.startsWith('data:') || rawLogoUrl.includes('techcorp'))) {
+      return rawLogoUrl;
+    }
+    return '/logos/techcorp.svg';
+  }
+
+  // If company is VNG
+  if (name.includes('vng')) {
+    if (rawLogoUrl && (rawLogoUrl.startsWith('data:') || rawLogoUrl.includes('vng'))) {
+      return rawLogoUrl;
+    }
+    return '/logos/vng.svg';
+  }
+
+  if (rawLogoUrl && typeof rawLogoUrl === 'string' && rawLogoUrl.trim().length > 0) {
+    if (!rawLogoUrl.includes('upload.wikimedia.org') && !rawLogoUrl.includes('tse2.mm.bing.net')) {
+      return rawLogoUrl;
+    }
+  }
+
+  return rawLogoUrl || '/logos/default-company.svg';
+}
+
+export const INITIAL_USERS = [
+  {
+    id: 1,
+    username: 'admin',
+    email: 'admin@internhub.edu.vn',
+    fullName: 'Quản Trị Viên InternHub - UET',
+    role: 'ROLE_ADMIN',
+    phone: '0988888888',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&h=200&q=80',
+    isActive: true,
+  },
+  {
+    id: 2,
+    username: 'fpt_software',
+    email: 'recruitment@fpt-software.com',
+    fullName: 'FPT Software Tuyển Dụng',
+    role: 'ROLE_COMPANY',
+    phone: '02473007300',
+    avatar: '/logos/fpt.svg',
+    isActive: true,
+    companyProfile: {
+      id: 2,
+      userId: 2,
+      companyName: 'FPT Software',
+      logoUrl: '/logos/fpt.svg',
+      website: 'https://fpt-software.com',
+      address: 'Tòa nhà FPT, Phố Duy Tân, Cầu Giấy, Hà Nội',
+      industry: 'Công nghệ phần mềm & Chuyển đổi số',
+      scale: '10,000+ nhân viên',
+      foundedYear: 1999,
+      description: 'FPT Software là tập đoàn công nghệ hàng đầu Việt Nam và khu vực, cung cấp giải pháp chuyển đổi số toàn cầu.',
+      isVerified: true,
+    }
+  },
+  {
+    id: 3,
+    username: 'techcorp',
+    email: 'contact@techcorp.vn',
+    fullName: 'TechCorp Innovation Lab',
+    role: 'ROLE_COMPANY',
+    phone: '0912345678',
+    avatar: '/logos/techcorp.svg',
+    isActive: true,
+    companyProfile: {
+      id: 3,
+      userId: 3,
+      companyName: 'TechCorp Innovation Lab',
+      logoUrl: '/logos/techcorp.svg',
+      website: 'https://techcorp.vn',
+      address: 'Tầng 8, Tòa nhà HITC, Xuân Thủy, Cầu Giấy, Hà Nội',
+      industry: 'FinTech & AI Platforms',
+      scale: '100-250 nhân viên',
+      foundedYear: 2021,
+      description: 'TechCorp chuyên phát triển các sản phẩm tài chính thế hệ mới và nền tảng ứng dụng trí tuệ nhân tạo.',
+      isVerified: true,
+    }
+  },
+  {
+    id: 4,
+    username: 'viettel_solutions',
+    email: 'hr@viettelsolutions.vn',
+    fullName: 'Viettel Enterprise Solutions',
+    role: 'ROLE_COMPANY',
+    phone: '02462776688',
+    avatar: '/logos/viettel.svg',
+    isActive: true,
+    companyProfile: {
+      id: 4,
+      userId: 4,
+      companyName: 'Viettel Solutions',
+      logoUrl: '/logos/viettel.svg',
+      website: 'https://viettelsolutions.vn',
+      address: 'Số 1 Trần Hữu Dực, Nam Từ Liêm, Hà Nội',
+      industry: 'Viễn thông & Giải pháp CNTT',
+      scale: '5,000+ nhân viên',
+      foundedYear: 2018,
+      description: 'Viettel Solutions đi đầu trong xây dựng chính phủ số, kinh tế số và xã hội số tại Việt Nam.',
+      isVerified: true,
+    }
+  },
+  {
+    id: 5,
+    username: 'student_uet',
+    email: '21020001@vnu.edu.vn',
+    fullName: 'Nguyễn Văn An',
+    role: 'ROLE_STUDENT',
+    phone: '0912345678',
+    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&h=200&q=80',
+    isActive: true,
+    studentProfile: {
+      id: 1,
+      studentCode: '21020001',
+      university: 'Đại học Công nghệ - ĐHQGHN (UET)',
+      major: 'Công nghệ Thông tin (CLC)',
+      gpa: 3.68,
+      graduationYear: 2025,
+      bio: 'Sinh viên năm 4 đam mê lập trình Backend Java/Spring Boot và kiến trúc Microservices. Tìm kiếm cơ hội thực tập phát triển hệ thống lớn.',
+      githubUrl: 'https://github.com/nguyenvanan-uet',
+      linkedinUrl: 'https://linkedin.com/in/nguyenvanan-uet',
+      portfolioUrl: 'https://annguyen.dev',
+      resumeUrl: '/sample-cv.html',
+      skills: ['Java', 'Spring Boot', 'MySQL', 'REST API', 'Docker'],
+    }
+  },
+  {
+    id: 6,
+    username: 'student2',
+    email: '22020555@vnu.edu.vn',
+    fullName: 'Trần Thị Mai Linh',
+    role: 'ROLE_STUDENT',
+    phone: '0987654321',
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&h=200&q=80',
+    isActive: true,
+    studentProfile: {
+      id: 2,
+      studentCode: '22020555',
+      university: 'Đại học Công nghệ - ĐHQGHN (UET)',
+      major: 'Khoa học Máy tính',
+      gpa: 3.82,
+      graduationYear: 2026,
+      bio: 'Sinh viên năm 3 yêu thích phát triển giao diện hiện đại với React/Next.js và thiết kế UI/UX trên Figma.',
+      githubUrl: 'https://github.com/mailinh-tran',
+      linkedinUrl: 'https://linkedin.com/in/mailinh-tran',
+      resumeUrl: '/sample-cv.html',
+      skills: ['ReactJS', 'JavaScript', 'TailwindCSS', 'Figma', 'HTML/CSS'],
+    }
+  }
+];
+
+export const INITIAL_JOBS = [
+  {
+    id: 1,
+    companyId: 2,
+    companyName: 'FPT Software',
+    companyLogo: '/logos/fpt.svg',
+    companyAddress: 'Tòa nhà FPT, Phố Duy Tân, Cầu Giấy, Hà Nội',
+    companyWebsite: 'https://fpt-software.com',
+    title: 'Thực tập sinh Backend Java (Spring Boot) - Kèm cặp 1:1',
+    description: 'Tham gia phát triển hệ thống quản lý dữ liệu lớn cho đối tác Nhật Bản & Singapore. Được Mentor Senior 1:1 hướng dẫn trực tiếp quy trình Agile/Scrum chuẩn quốc tế.',
+    requirements: '• Sinh viên năm 3, 4 hoặc mới tốt nghiệp chuyên ngành CNTT, KHMT, Toán Tin.\n• Nắm chắc kiến thức Java Core, OOP, Spring Boot, MySQL.\n• Có tinh thần trách nhiệm, ham học hỏi và tư duy logic tốt.',
+    benefits: '• Trợ cấp thực tập: 6.000.000 - 8.000.000 VNĐ / tháng.\n• Hỗ trợ dấu mộc và số liệu làm báo cáo Thực tập doanh nghiệp UET.\n• Cơ hội lên chính thức ngay sau khi hoàn thành khóa thực tập.\n• Teambuilding, đồ ăn nhẹ, trà chiều tại văn phòng.',
+    location: 'Hà Nội',
+    jobType: 'INTERNSHIP',
+    salaryRange: '6.000.000 - 8.000.000 VNĐ / tháng',
+    slots: 5,
+    deadline: '2026-11-30',
+    status: 'ACTIVE',
+    skills: ['Java', 'Spring Boot', 'MySQL', 'REST API'],
+    createdAt: '2026-09-20T10:00:00',
+    applicationsCount: 4,
+  },
+  {
+    id: 2,
+    companyId: 3,
+    companyName: 'TechCorp Innovation Lab',
+    companyLogo: '/logos/techcorp.svg',
+    companyAddress: 'Tầng 8, Tòa HITC, Xuân Thủy, Cầu Giấy, Hà Nội',
+    companyWebsite: 'https://techcorp.vn',
+    title: 'Frontend ReactJS Developer Intern - Next-Gen FinTech',
+    description: 'Xây dựng dashboard và giao diện người dùng cho ứng dụng quản lý tài chính thế hệ mới với hiệu năng cao và UX mượt mà.',
+    requirements: '• Nắm chắc HTML5, CSS3, JavaScript/TypeScript.\n• Đã làm đồ án hoặc bài tập lớn với ReactJS / Next.js.\n• Có thẩm mỹ giao diện tốt, chủ động tìm tòi công nghệ mới.',
+    benefits: '• Trợ cấp: 5.500.000 - 7.500.000 VNĐ / tháng.\n• Cung cấp MacBook Pro làm việc tại văn phòng.\n• Chế độ Hybrid linh hoạt 2 ngày WFH/tuần.',
+    location: 'Hà Nội',
+    jobType: 'INTERNSHIP',
+    salaryRange: '5.500.000 - 7.500.000 VNĐ / tháng',
+    slots: 3,
+    deadline: '2026-10-31',
+    status: 'ACTIVE',
+    skills: ['ReactJS', 'JavaScript', 'TailwindCSS', 'Figma'],
+    createdAt: '2026-09-22T08:30:00',
+    applicationsCount: 2,
+  },
+  {
+    id: 3,
+    companyId: 4,
+    companyName: 'Viettel Solutions',
+    companyLogo: '/logos/viettel.svg',
+    companyAddress: 'Số 1 Trần Hữu Dực, Nam Từ Liêm, Hà Nội',
+    companyWebsite: 'https://viettelsolutions.vn',
+    title: 'AI & Data Science Engineering Intern (Viettel Solutions)',
+    description: 'Tham gia nghiên cứu và triển khai mô hình LLM, xử lý ngôn ngữ tự nhiên tiếng Việt và phân tích dữ liệu lớn phục vụ chính quyền số.',
+    requirements: '• Sinh viên năm cuối hoặc Thạc sĩ ngành CNTT, Khoa học Dữ liệu, Toán Tin.\n• Thành thạo Python, PyTorch, Pandas, Scikit-learn.\n• GPA từ 3.2 trở lên là lợi thế.',
+    benefits: '• Trợ cấp hấp dẫn: 8.000.000 - 12.000.000 VNĐ / tháng.\n• Làm việc trên hạ tầng máy chủ GPU công suất lớn.\n• Cơ hội đứng tên bài báo khoa học công bố quốc tế.',
+    location: 'Hà Nội',
+    jobType: 'FULL_TIME',
+    salaryRange: '8.000.000 - 12.000.000 VNĐ / tháng',
+    slots: 2,
+    deadline: '2026-12-15',
+    status: 'ACTIVE',
+    skills: ['Python', 'Machine Learning', 'Docker'],
+    createdAt: '2026-09-23T14:15:00',
+    applicationsCount: 1,
+  },
+  {
+    id: 4,
+    companyId: 2,
+    companyName: 'FPT Software',
+    companyLogo: '/logos/fpt.svg',
+    companyAddress: 'Tòa nhà FPT, Phố Duy Tân, Cầu Giấy, Hà Nội',
+    companyWebsite: 'https://fpt-software.com',
+    title: 'Cloud DevOps Intern - Kubernetes & CI/CD Pipelines',
+    description: 'Triển khai và vận hành hệ thống CI/CD, giám sát Kubernetes clusters trên hạ tầng AWS/Azure cho các dự án phần mềm đa quốc gia.',
+    requirements: '• Hiểu biết cơ bản về Linux, Docker, Bash script, Git.\n• Có tìm hiểu về CI/CD (GitHub Actions / Jenkins) và Cloud cơ bản.\n• Tinh thần trách nhiệm cao và sẵn sàng học hỏi công nghệ DevOps.',
+    benefits: '• Trợ cấp: 6.500.000 - 8.500.000 VNĐ / tháng.\n• Tài trợ 100% lệ phí thi chứng chỉ AWS/CKA.\n• Đào tạo trực tiếp từ chuyên gia Cloud Architect.',
+    location: 'Hà Nội',
+    jobType: 'INTERNSHIP',
+    salaryRange: '6.500.000 - 8.500.000 VNĐ / tháng',
+    slots: 2,
+    deadline: '2026-11-15',
+    status: 'ACTIVE',
+    skills: ['Docker', 'Kubernetes', 'AWS', 'Git'],
+    createdAt: '2026-09-21T11:00:00',
+    applicationsCount: 3,
+  }
+];
+
+export const INITIAL_APPLICATIONS = [
+  {
+    id: 1,
+    jobId: 1,
+    jobTitle: 'Thực tập sinh Backend Java (Spring Boot) - Kèm cặp 1:1',
+    companyName: 'FPT Software',
+    companyLogo: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&w=200&h=200&q=80',
+    studentProfileId: 1,
+    studentUserId: 5,
+    studentName: 'Nguyễn Văn An',
+    studentEmail: '21020001@vnu.edu.vn',
+    studentPhone: '0912345678',
+    studentUniversity: 'Đại học Công nghệ - ĐHQGHN (UET)',
+    studentMajor: 'Công nghệ Thông tin (CLC)',
+    studentGpa: 3.68,
+    resumeUrl: '/sample-cv.html',
+    coverLetter: 'Em chào anh/chị tuyển dụng FPT Software. Em là sinh viên năm 4 khoa CNTT UET, có đam mê lớn với Spring Boot và Microservices. Rất mong có cơ hội thực tập và học hỏi tại FPT Software.',
+    status: 'INTERVIEW',
+    employerFeedback: 'Hồ sơ ứng viên rất nổi bật, điểm GPA cao và đã có sản phẩm demo tốt. Mời em tham gia phỏng vấn kỹ thuật trực tuyến.',
+    interviewTime: '2026-09-28T14:00:00',
+    interviewLocation: 'Google Meet: https://meet.google.com/internhub-fpt-interview',
+    interviewNotes: 'Chuẩn bị giới thiệu đồ án tốt nghiệp và kiến thức Spring Boot / SQL.',
+    createdAt: '2026-09-22T09:00:00',
+    updatedAt: '2026-09-23T16:00:00',
+  },
+  {
+    id: 2,
+    jobId: 2,
+    jobTitle: 'Frontend ReactJS Developer Intern - Next-Gen FinTech',
+    companyName: 'TechCorp Innovation Lab',
+    companyLogo: 'https://images.unsplash.com/photo-1572021335469-31706a17aaef?auto=format&fit=crop&w=200&h=200&q=80',
+    studentProfileId: 2,
+    studentUserId: 6,
+    studentName: 'Trần Thị Mai Linh',
+    studentEmail: '22020555@vnu.edu.vn',
+    studentPhone: '0987654321',
+    studentUniversity: 'Đại học Công nghệ - ĐHQGHN (UET)',
+    studentMajor: 'Khoa học Máy tính',
+    studentGpa: 3.82,
+    studentSkills: ['ReactJS', 'JavaScript', 'TailwindCSS', 'Figma', 'HTML/CSS'],
+    resumeUrl: '/sample-cv.html',
+    coverLetter: 'Kính gửi TechCorp, em là sinh viên năm 3 UET chuyên về giao diện ReactJS. Em muốn được thử sức với sản phẩm FinTech của công ty.',
+    status: 'APPLIED',
+    employerFeedback: null,
+    interviewTime: null,
+    interviewLocation: null,
+    interviewNotes: null,
+    createdAt: '2026-09-23T10:30:00',
+    updatedAt: '2026-09-23T10:30:00',
+  }
+];
+
+export const INITIAL_NOTIFICATIONS = [
+  {
+    id: 1,
+    userId: 5,
+    title: 'Lời mời phỏng vấn từ FPT Software',
+    message: 'Bạn nhận được lịch phỏng vấn vị trí Thực tập sinh Backend Java lúc 14:00 ngày 28/09/2026.',
+    link: '/student/applications',
+    isRead: false,
+    createdAt: '2026-09-23T16:00:00',
+  },
+  {
+    id: 2,
+    userId: 2,
+    title: 'Ứng viên mới ứng tuyển!',
+    message: 'Sinh viên Nguyễn Văn An (UET - GPA 3.68) đã nộp hồ sơ vào vị trí Backend Java.',
+    link: '/company/applications',
+    isRead: false,
+    createdAt: '2026-09-22T09:00:00',
+  }
+];
