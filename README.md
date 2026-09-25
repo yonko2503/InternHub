@@ -3,7 +3,7 @@
 > **Dự án thuộc Học phần Thực hành Doanh nghiệp – Trường Đại học Công nghệ, Đại học Quốc gia Hà Nội (UET - VNU)**  
 > **Tác giả / Mã sinh viên**: `23021642`  
 > **Email**: `23021642@vnu.edu.vn`  
-> **Công nghệ**: Spring Boot 3 (Java 17) + Spring Security (JWT) + React 19 (Vite) + Tailwind/Vanilla CSS + MySQL / H2 Database
+> **Công nghệ**: Spring Boot 3 (Java 17) + Spring Security (JWT) + React 19 (Vite) + Tailwind/Vanilla CSS + MySQL Database (XAMPP)
 
 ---
 
@@ -64,7 +64,7 @@
 ### Công nghệ sử dụng
 - **Frontend**: React 19, Vite, Lucide Icons, Vanilla/Modern CSS Design System (Glassmorphism, Responsive UI).
 - **Backend**: Java 17, Spring Boot 3.x, Spring Data JPA, Spring Security, JWT (JSON Web Token), Lombok, Maven.
-- **Database**: MySQL 8.0+ / H2 In-Memory Database.
+- **Database**: MySQL 8.0+ (hỗ trợ XAMPP / MySQL Workbench).
 
 ### Cấu trúc dự án
 ```text
@@ -79,12 +79,12 @@ internhub/
 │   │   ├── security/               # JWT Token Provider, Filters & UserPrincipal
 │   │   └── service/                # Business Logic Services
 │   ├── src/main/resources/
-│   │   └── application.properties  # Cấu hình Database & Port
+│   │   └── application.properties  # Cấu hình Database MySQL & Port
 │   └── pom.xml                     # Quản lý dependencies Maven
 ├── frontend/                       # Mã nguồn giao diện React (Vite)
 │   ├── public/                     # Logo doanh nghiệp SVG, favicon, sample CV
 │   ├── src/
-│   │   ├── api/                    # API Client & Mock Data Fallback
+│   │   ├── api/                    # API Client & Data Fallback
 │   │   ├── components/             # Navbar, Footer, JobCard, JobDetailModal, ApplyModal, AuthModal...
 │   │   ├── context/                # AuthContext (Quản lý State & LocalStorage)
 │   │   ├── pages/                  # HomePage, JobsPage, CompaniesPage, StudentDashboard, CompanyDashboard, AdminDashboard, ProfilePage
@@ -104,10 +104,24 @@ internhub/
 ### Yêu cầu môi trường
 - **Java JDK 17** trở lên.
 - **Node.js 18** trở lên & `npm`.
+- **MySQL 8.0** trở lên (hoặc **XAMPP**).
 
 ---
 
-### Bước 1: Khởi chạy Backend (Spring Boot API)
+### Bước 1: Khởi động Cơ sở dữ liệu MySQL (XAMPP / Workbench)
+
+1. Mở **XAMPP Control Panel** $\to$ Bấm **Start** tại dịch vụ **MySQL** (Cổng mặc định: `3306`).
+2. *(Tùy chọn)* Truy cập `http://localhost/phpmyadmin` hoặc **MySQL Workbench** và thực thi script có sẵn tại [database/schema.sql](file:///d:/internhub/database/schema.sql):
+```sql
+CREATE DATABASE IF NOT EXISTS internhub CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE internhub;
+-- Chạy nội dung file database/schema.sql
+```
+*(Nếu database chưa tạo, Spring Boot cũng sẽ tự động tạo database `internhub` và tự nạp toàn bộ dữ liệu mẫu).*
+
+---
+
+### Bước 2: Khởi chạy Backend (Spring Boot API)
 
 Mở terminal tại thư mục `backend`:
 
@@ -117,14 +131,10 @@ cd d:\internhub\backend
 ```
 
 - **Backend REST API**: `http://localhost:8080`
-- **H2 Database Console**: `http://localhost:8080/h2-console`
-  - *JDBC URL*: `jdbc:h2:mem:internhubdb`
-  - *User*: `sa`
-  - *Password*: *(để trống)*
 
 ---
 
-### Bước 2: Khởi chạy Frontend (React + Vite)
+### Bước 3: Khởi chạy Frontend (React + Vite)
 
 Mở một cửa sổ terminal khác tại thư mục `frontend`:
 
