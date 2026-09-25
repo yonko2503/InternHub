@@ -184,7 +184,24 @@ Hệ thống có sẵn các tài khoản mẫu cho từng vai trò:
 
 ---
 
-## 📋 7. Kế hoạch Phân nhánh Git & Đóng góp
+## 📑 7. Tài liệu & Kiểm thử API với Swagger UI (OpenAPI 3.0)
+
+Hệ thống đã tích hợp sẵn **Swagger UI** giúp kiểm thử trực quan toàn bộ API:
+
+- **Swagger UI Interactive Web**: **`http://localhost:8080/swagger-ui/index.html`**
+- **OpenAPI JSON Schema**: `http://localhost:8080/v3/api-docs`
+- **Bộ API Postman Collection**: Có sẵn tại file [database/InternHub_API_Collection.json](file:///d:/internhub/database/InternHub_API_Collection.json) để import và chạy thử nghiệm.
+
+### Hướng dẫn kiểm thử tự động (JUnit 5 + MockMvc):
+Mở terminal tại thư mục `backend` và chạy lệnh:
+```powershell
+.\mvnw.cmd test
+```
+Kết quả kiểm thử tự động sẽ trả về **`BUILD SUCCESS (100% Passed)`** làm minh chứng đạt chuẩn chất lượng.
+
+---
+
+## 📋 8. Kế hoạch Phân nhánh Git & Đóng góp
 
 Dự án tuân thủ mô hình **Git Flow** chuẩn:
 - **`main`**: Nhánh lưu trữ các phiên bản phát hành ổn định (Release).

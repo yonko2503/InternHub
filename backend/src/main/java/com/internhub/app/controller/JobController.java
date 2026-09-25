@@ -5,6 +5,8 @@ import com.internhub.app.dto.JobRequest;
 import com.internhub.app.dto.JobResponse;
 import com.internhub.app.model.JobType;
 import com.internhub.app.service.JobService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +18,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/jobs")
 @RequiredArgsConstructor
+@Tag(name = "2. Jobs Management", description = "API Quản lý tin tuyển dụng: Tìm kiếm, Lọc, Đăng tin, Chỉnh sửa và Xóa tin")
 public class JobController {
 
     private final JobService jobService;
 
+    @Operation(summary = "Lấy danh sách việc làm công khai", description = "Lọc tin tuyển dụng theo từ khóa, kỹ năng, địa điểm hoặc hình thức làm việc")
     @GetMapping
     public ResponseEntity<ApiResponse<List<JobResponse>>> getAllJobs(
             @RequestParam(required = false) String keyword,
