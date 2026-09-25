@@ -1,5 +1,5 @@
 // API Client for InternHub
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
 export const getAuthToken = () => localStorage.getItem('internhub_token');
 export const setAuthToken = (token) => {
