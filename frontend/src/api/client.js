@@ -1,5 +1,7 @@
 // API Client for InternHub
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+const defaultUrl = import.meta.env.DEV ? 'http://localhost:8080/api' : 'https://internhub-backend.onrender.com/api';
+const rawBaseUrl = import.meta.env.VITE_API_URL || defaultUrl;
+const API_BASE_URL = rawBaseUrl.replace(/\/+$/, '');
 
 export const getAuthToken = () => localStorage.getItem('internhub_token');
 export const setAuthToken = (token) => {
