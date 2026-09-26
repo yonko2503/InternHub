@@ -40,6 +40,7 @@ public class User {
 
     private String phone;
 
+    @Column(columnDefinition = "LONGTEXT")
     private String avatar;
 
     @Builder.Default

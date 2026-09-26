@@ -35,6 +35,7 @@ public class StudentProfile {
     private String githubUrl;
     private String linkedinUrl;
     private String portfolioUrl;
+    @Column(columnDefinition = "LONGTEXT")
     private String resumeUrl; // Default CV URL
 
     @ManyToMany(fetch = FetchType.EAGER)

@@ -142,24 +142,23 @@ export const AuthProvider = ({ children }) => {
     safeSetStorage('internhub_skills', skillsList);
   }, [skillsList]);
 
+  const fetchBackendJobs = async () => {
+    try {
+      const res = await apiRequest('/jobs');
+      if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
+        setJobs(res.data);
+        setIsLiveBackend(true);
+        safeSetStorage('internhub_jobs', res.data);
+        console.log('Connected to live Spring Boot backend & loaded DB jobs!');
+      }
+    } catch (e) {
+      console.log('Using integrated state mode (Spring Boot backend offline or loading)');
+    }
+  };
+
   // Check if live Spring Boot backend is reachable
   useEffect(() => {
-    async function checkBackend() {
-      try {
-        const res = await fetch('http://localhost:8080/api/jobs');
-        if (res.ok) {
-          const json = await res.json();
-          if (json.data && Array.isArray(json.data) && json.data.length > 0) {
-            setJobs(json.data);
-            setIsLiveBackend(true);
-            console.log('Connected to live Spring Boot backend!');
-          }
-        }
-      } catch (e) {
-        console.log('Using integrated state mode (Spring Boot can be started simultaneously)');
-      }
-    }
-    checkBackend();
+    fetchBackendJobs();
   }, []);
 
   const login = async (username, password) => {
@@ -549,7 +548,7 @@ export const AuthProvider = ({ children }) => {
     setNotifications((prev) => [...newNotifs, ...prev]);
   };
 
-  const updateProfile = (updatedProfileData) => {
+  const updateProfile = async (updatedProfileData) => {
     let nextUser = null;
     const newAvatar = updatedProfileData.avatar || updatedProfileData.logoUrl;
 
@@ -621,6 +620,35 @@ export const AuthProvider = ({ children }) => {
         safeSetStorage('internhub_jobs', nextJobs);
         return nextJobs;
       });
+    }
+
+    // Persist changes to MySQL Database via Spring Boot Backend API
+    try {
+      if (user?.role === 'ROLE_COMPANY') {
+        await apiRequest('/companies/me', {
+          method: 'PUT',
+          body: JSON.stringify({
+            fullName: updatedProfileData.fullName,
+            phone: updatedProfileData.phone,
+            companyName: updatedProfileData.companyName,
+            logoUrl: newAvatar,
+            website: updatedProfileData.website,
+            address: updatedProfileData.address,
+            industry: updatedProfileData.industry,
+            scale: updatedProfileData.scale,
+            foundedYear: updatedProfileData.foundedYear,
+            description: updatedProfileData.description,
+          }),
+        });
+        fetchBackendJobs();
+      } else if (user?.role === 'ROLE_STUDENT') {
+        await apiRequest('/students/me', {
+          method: 'PUT',
+          body: JSON.stringify(updatedProfileData),
+        });
+      }
+    } catch (err) {
+      console.warn('Could not sync profile to backend server:', err.message);
     }
   };
 

@@ -23,6 +23,7 @@ public class CompanyProfile {
     @Column(nullable = false, length = 150)
     private String companyName;
 
+    @Column(columnDefinition = "LONGTEXT")
     private String logoUrl;
     private String website;
     private String address;

@@ -6,45 +6,17 @@ export const INITIAL_SKILLS = [
 ];
 
 export function getCompanyLogoUrl(companyName, rawLogoUrl) {
-  const name = (companyName || '').toLowerCase();
-
-  // If company is Viettel, strictly return Viettel logo or uploaded custom Viettel avatar
-  if (name.includes('viettel')) {
-    if (rawLogoUrl && (rawLogoUrl.startsWith('data:') || rawLogoUrl.includes('viettel'))) {
-      return rawLogoUrl;
-    }
-    return '/logos/viettel.svg';
-  }
-
-  // If company is FPT, strictly return FPT logo or uploaded custom FPT avatar
-  if (name.includes('fpt')) {
-    if (rawLogoUrl && (rawLogoUrl.startsWith('data:') || rawLogoUrl.includes('fpt'))) {
-      return rawLogoUrl;
-    }
-    return '/logos/fpt.svg';
-  }
-
-  // If company is TechCorp
-  if (name.includes('techcorp')) {
-    if (rawLogoUrl && (rawLogoUrl.startsWith('data:') || rawLogoUrl.includes('techcorp'))) {
-      return rawLogoUrl;
-    }
-    return '/logos/techcorp.svg';
-  }
-
-  // If company is VNG
-  if (name.includes('vng')) {
-    if (rawLogoUrl && (rawLogoUrl.startsWith('data:') || rawLogoUrl.includes('vng'))) {
-      return rawLogoUrl;
-    }
-    return '/logos/vng.svg';
-  }
-
   if (rawLogoUrl && typeof rawLogoUrl === 'string' && rawLogoUrl.trim().length > 0) {
     if (!rawLogoUrl.includes('upload.wikimedia.org') && !rawLogoUrl.includes('tse2.mm.bing.net')) {
       return rawLogoUrl;
     }
   }
+
+  const name = (companyName || '').toLowerCase();
+  if (name.includes('viettel')) return '/logos/viettel.svg';
+  if (name.includes('fpt')) return '/logos/fpt.svg';
+  if (name.includes('techcorp')) return '/logos/techcorp.svg';
+  if (name.includes('vng')) return '/logos/vng.svg';
 
   return rawLogoUrl || '/logos/default-company.svg';
 }
