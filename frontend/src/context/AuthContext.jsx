@@ -156,10 +156,53 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const fetchBackendUsers = async () => {
+    try {
+      const res = await apiRequest('/admin/users');
+      if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
+        setAllUsers(res.data);
+        safeSetStorage('internhub_all_users', res.data);
+      }
+    } catch (e) {
+      // Not logged in as admin or offline
+    }
+  };
+
+  const fetchBackendCompanies = async () => {
+    try {
+      const res = await apiRequest('/companies');
+      if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
+        setAllUsers((prev) => {
+          return prev.map((u) => {
+            const compMatch = res.data.find(c => c.userId === u.id || c.companyName === u.companyProfile?.companyName || c.companyName === u.fullName);
+            if (compMatch) {
+              return {
+                ...u,
+                avatar: compMatch.logoUrl || u.avatar,
+                companyProfile: {
+                  ...(u.companyProfile || {}),
+                  ...compMatch,
+                  logoUrl: compMatch.logoUrl || u.companyProfile?.logoUrl
+                }
+              };
+            }
+            return u;
+          });
+        });
+      }
+    } catch (e) {
+      // Backend offline or loading
+    }
+  };
+
   // Check if live Spring Boot backend is reachable
   useEffect(() => {
     fetchBackendJobs();
-  }, []);
+    fetchBackendCompanies();
+    if (user?.role === 'ROLE_ADMIN') {
+      fetchBackendUsers();
+    }
+  }, [user?.role]);
 
   const login = async (username, password) => {
     try {
@@ -668,7 +711,7 @@ export const AuthProvider = ({ children }) => {
     );
   };
 
-  const adminUpdateUser = (userId, updatedData) => {
+  const adminUpdateUser = async (userId, updatedData) => {
     let nextUserForCurrent = null;
 
     setAllUsers((prev) => {
@@ -785,6 +828,17 @@ export const AuthProvider = ({ children }) => {
         safeSetStorage('internhub_applications', nextApps);
         return nextApps;
       });
+    }
+
+    try {
+      await apiRequest(`/admin/users/${userId}`, {
+        method: 'PUT',
+        body: JSON.stringify(updatedData),
+      });
+      fetchBackendUsers();
+      fetchBackendJobs();
+    } catch (err) {
+      console.warn('Could not sync admin user update to backend server:', err.message);
     }
   };
 

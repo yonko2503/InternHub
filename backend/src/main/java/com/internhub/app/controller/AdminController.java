@@ -2,6 +2,7 @@ package com.internhub.app.controller;
 
 import com.internhub.app.dto.ApiResponse;
 import com.internhub.app.dto.DashboardStatsResponse;
+import com.internhub.app.dto.UserManagementDTO;
 import com.internhub.app.model.User;
 import com.internhub.app.service.AdminService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,9 +29,18 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success(adminService.getDashboardStats()));
     }
 
+    @Operation(summary = "Lấy danh sách người dùng", description = "Danh sách đầy đủ tài khoản, vai trò và hồ sơ")
     @GetMapping("/users")
-    public ResponseEntity<ApiResponse<List<User>>> getAllUsers() {
+    public ResponseEntity<ApiResponse<List<UserManagementDTO>>> getAllUsers() {
         return ResponseEntity.ok(ApiResponse.success(adminService.getAllUsers()));
+    }
+
+    @Operation(summary = "Cập nhật người dùng bởi Admin", description = "Admin chỉnh sửa thông tin tài khoản, vai trò, hồ sơ hoặc logo")
+    @PutMapping("/users/{userId}")
+    public ResponseEntity<ApiResponse<UserManagementDTO>> updateUser(
+            @PathVariable Long userId,
+            @RequestBody java.util.Map<String, Object> req) {
+        return ResponseEntity.ok(ApiResponse.success("Cập nhật thông tin người dùng thành công!", adminService.updateUserByAdmin(userId, req)));
     }
 
     @PatchMapping("/users/{userId}/toggle-status")
