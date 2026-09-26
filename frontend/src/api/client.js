@@ -31,11 +31,17 @@ export async function apiRequest(endpoint, options = {}) {
     ...options.headers,
   };
 
+  const controller = new AbortController();
+  const timeout = options.timeout || 15000;
+  const timer = setTimeout(() => controller.abort(), timeout);
+
   try {
     const res = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
       headers,
+      signal: options.signal || controller.signal,
     });
+    clearTimeout(timer);
 
     const data = await res.json();
     if (!res.ok) {
@@ -43,6 +49,10 @@ export async function apiRequest(endpoint, options = {}) {
     }
     return data;
   } catch (err) {
+    clearTimeout(timer);
+    if (err.name === 'AbortError') {
+      throw new Error('Kết nối tới máy chủ quá thời gian chờ (Server Render đang khởi động, vui lòng thử lại sau vài giây).');
+    }
     console.warn(`API call failed for ${endpoint}:`, err.message);
     throw err;
   }
