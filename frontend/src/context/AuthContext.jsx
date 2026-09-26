@@ -195,14 +195,52 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const fetchUserData = async (loggedRole) => {
+    try {
+      if (loggedRole === 'ROLE_STUDENT') {
+        const [studRes, appRes] = await Promise.allSettled([
+          apiRequest('/students/me'),
+          apiRequest('/applications/me')
+        ]);
+        if (studRes.status === 'fulfilled' && studRes.value?.data) {
+          setUser((prev) => prev ? ({ ...prev, studentProfile: studRes.value.data, avatar: studRes.value.data.avatar || prev.avatar }) : prev);
+        }
+        if (appRes.status === 'fulfilled' && appRes.value?.data && Array.isArray(appRes.value.data)) {
+          setApplications(appRes.value.data);
+          safeSetStorage('internhub_applications', appRes.value.data);
+        }
+      } else if (loggedRole === 'ROLE_COMPANY') {
+        const [compRes, appRes] = await Promise.allSettled([
+          apiRequest('/companies/me'),
+          apiRequest('/applications/company')
+        ]);
+        if (compRes.status === 'fulfilled' && compRes.value?.data) {
+          setUser((prev) => prev ? ({ 
+            ...prev, 
+            companyProfile: compRes.value.data, 
+            avatar: compRes.value.data.logoUrl || prev.avatar 
+          }) : prev);
+        }
+        if (appRes.status === 'fulfilled' && appRes.value?.data && Array.isArray(appRes.value.data)) {
+          setApplications(appRes.value.data);
+          safeSetStorage('internhub_applications', appRes.value.data);
+        }
+      } else if (loggedRole === 'ROLE_ADMIN') {
+        fetchBackendUsers();
+      }
+    } catch (e) {
+      console.warn('Could not load user data from backend:', e.message);
+    }
+  };
+
   // Check if live Spring Boot backend is reachable
   useEffect(() => {
     fetchBackendJobs();
     fetchBackendCompanies();
-    if (user?.role === 'ROLE_ADMIN') {
-      fetchBackendUsers();
+    if (user?.role) {
+      fetchUserData(user.role);
     }
-  }, [user?.role]);
+  }, [user?.role, token]);
 
   const login = async (username, password) => {
     try {
@@ -210,7 +248,7 @@ export const AuthProvider = ({ children }) => {
         method: 'POST',
         body: JSON.stringify({ username, password }),
       });
-      if (res.success && res.data) {
+      if (res && res.success && res.data) {
         const authData = res.data;
         const loggedUser = {
           id: authData.id,
@@ -224,10 +262,14 @@ export const AuthProvider = ({ children }) => {
         setToken(authData.accessToken);
         setAuthToken(authData.accessToken);
         setStoredUser(loggedUser);
+
+        // Fetch real profile data and applications from database
+        fetchUserData(authData.role);
+        fetchBackendJobs();
         return { success: true };
       }
     } catch (err) {
-      // Fallback to mock users
+      // Fallback to mock users for offline resiliency
       const found = allUsers.find(
         (u) => (u.username === username || u.email === username)
       );
@@ -242,20 +284,25 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const quickLogin = (roleKey) => {
-    let target = null;
-    if (roleKey === 'student') target = allUsers.find((u) => u.username === 'student_uet') || INITIAL_USERS[4];
-    else if (roleKey === 'fpt' || roleKey === 'company') target = allUsers.find((u) => u.username === 'fpt_software') || INITIAL_USERS[1];
-    else if (roleKey === 'viettel') target = allUsers.find((u) => u.username === 'viettel_solutions') || INITIAL_USERS[3];
-    else if (roleKey === 'techcorp') target = allUsers.find((u) => u.username === 'techcorp') || INITIAL_USERS[2];
-    else if (roleKey === 'admin') target = allUsers.find((u) => u.username === 'admin') || INITIAL_USERS[0];
-    else target = allUsers.find((u) => u.username === roleKey || u.email === roleKey);
-    
-    if (target) {
-      setUser(target);
-      setToken('demo-token-' + target.id);
-      setAuthToken('demo-token-' + target.id);
-      setStoredUser(target);
+  const quickLogin = async (roleKey) => {
+    let credentials = null;
+    if (roleKey === 'student') credentials = { username: 'student_uet', password: '123456' };
+    else if (roleKey === 'student2') credentials = { username: 'student2', password: '123456' };
+    else if (roleKey === 'fpt' || roleKey === 'company') credentials = { username: 'fpt_software', password: '123456' };
+    else if (roleKey === 'viettel') credentials = { username: 'viettel_solutions', password: '123456' };
+    else if (roleKey === 'techcorp') credentials = { username: 'techcorp', password: '123456' };
+    else if (roleKey === 'admin') credentials = { username: 'admin', password: 'admin123' };
+
+    if (credentials) {
+      try {
+        await login(credentials.username, credentials.password);
+      } catch (err) {
+        let target = allUsers.find((u) => u.username === credentials.username) || INITIAL_USERS[0];
+        setUser(target);
+        setToken('demo-token-' + target.id);
+        setAuthToken('demo-token-' + target.id);
+        setStoredUser(target);
+      }
     }
   };
 
@@ -350,10 +397,12 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await apiRequest('/applications', {
         method: 'POST',
-        body: JSON.stringify({ jobId, coverLetter, resumeUrl }),
+        body: JSON.stringify({ jobId: Number(jobId), coverLetter, resumeUrl }),
       });
-      if (res.success && res.data) {
+      if (res && res.success && res.data) {
         setApplications((prev) => [res.data, ...prev]);
+        safeSetStorage('internhub_applications', [res.data, ...applications]);
+        fetchUserData('ROLE_STUDENT');
         return res.data;
       }
     } catch (e) {
@@ -387,21 +436,6 @@ export const AuthProvider = ({ children }) => {
         updatedAt: new Date().toISOString(),
       };
       setApplications((prev) => [newApp, ...prev]);
-      
-      // Add notification for company
-      setNotifications((prev) => [
-        {
-          id: Date.now() + 1,
-          userId: job?.companyId || 2,
-          title: 'Ứng viên mới nộp đơn!',
-          message: `${user?.fullName} vừa ứng tuyển vào vị trí "${job?.title}"`,
-          link: '/company/applications',
-          isRead: false,
-          createdAt: new Date().toISOString(),
-        },
-        ...prev,
-      ]);
-
       return newApp;
     }
   };
@@ -418,8 +452,9 @@ export const AuthProvider = ({ children }) => {
           interviewNotes: interviewData?.notes,
         }),
       });
-      if (res.success && res.data) {
+      if (res && res.success && res.data) {
         setApplications((prev) => prev.map((a) => (a.id === appId ? res.data : a)));
+        fetchUserData('ROLE_COMPANY');
         return res.data;
       }
     } catch (e) {
@@ -440,23 +475,6 @@ export const AuthProvider = ({ children }) => {
           return a;
         })
       );
-
-      // Notification to student
-      const app = applications.find((a) => a.id === appId);
-      if (app) {
-        setNotifications((prev) => [
-          {
-            id: Date.now(),
-            userId: app.studentUserId,
-            title: `Cập nhật đơn ứng tuyển - ${app.jobTitle}`,
-            message: `Trạng thái mới: ${status}. ${feedback ? 'Ghi chú: ' + feedback : ''}`,
-            link: '/student/applications',
-            isRead: false,
-            createdAt: new Date().toISOString(),
-          },
-          ...prev,
-        ]);
-      }
     }
   };
 
@@ -494,20 +512,10 @@ export const AuthProvider = ({ children }) => {
         method: 'POST',
         body: JSON.stringify(jobData),
       });
-      if (res.success && res.data) {
-        const serverJob = {
-          ...localNewJob,
-          ...res.data,
-          companyId: user?.id || user?.companyProfile?.id || 2,
-          companyName: compName,
-          companyLogo: compLogo,
-        };
-        setJobs((prev) => {
-          const next = [serverJob, ...prev];
-          safeSetStorage('internhub_jobs', next);
-          return next;
-        });
-        return serverJob;
+      if (res && res.success && res.data) {
+        setJobs((prev) => [res.data, ...prev]);
+        fetchBackendJobs();
+        return res.data;
       }
     } catch (e) {
       // Local fallback
@@ -527,8 +535,9 @@ export const AuthProvider = ({ children }) => {
         method: 'PUT',
         body: JSON.stringify(jobData),
       });
-      if (res.success && res.data) {
+      if (res && res.success && res.data) {
         setJobs((prev) => prev.map((j) => (j.id === jobId ? res.data : j)));
+        fetchBackendJobs();
         return res.data;
       }
     } catch (e) {
@@ -546,8 +555,9 @@ export const AuthProvider = ({ children }) => {
           method: 'PUT',
           body: JSON.stringify({ ...job, status }),
         });
-        if (res.success && res.data) {
+        if (res && res.success && res.data) {
           setJobs((prev) => prev.map((j) => (j.id === jobId ? res.data : j)));
+          fetchBackendJobs();
           return res.data;
         }
       }
@@ -561,6 +571,7 @@ export const AuthProvider = ({ children }) => {
   const deleteJob = async (jobId) => {
     try {
       await apiRequest(`/jobs/${jobId}`, { method: 'DELETE' });
+      fetchBackendJobs();
     } catch (e) {
       // fallback
     }
