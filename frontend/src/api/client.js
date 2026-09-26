@@ -1,5 +1,5 @@
 // API Client for InternHub
-const PROD_API_URL = 'https://internhub-backend.onrender.com/api';
+const PROD_API_URL = 'https://internhub-backend-w8ag.onrender.com/api';
 const LOCAL_API_URL = 'http://localhost:8080/api';
 
 const BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? LOCAL_API_URL : PROD_API_URL);
@@ -25,6 +25,9 @@ export const setStoredUser = (user) => {
   else localStorage.removeItem('internhub_user');
 };
 
+// Default timeout: 15 seconds (enough for Render cold start wake-up)
+const DEFAULT_TIMEOUT_MS = 15000;
+
 export async function apiRequest(endpoint, options = {}) {
   const token = getAuthToken();
   const headers = {
@@ -34,12 +37,20 @@ export async function apiRequest(endpoint, options = {}) {
   };
 
   const url = `${API_BASE_URL}${endpoint}`;
+  const timeoutMs = options.timeoutMs || DEFAULT_TIMEOUT_MS;
+
+  // Create AbortController for timeout
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
     const res = await fetch(url, {
       ...options,
       headers,
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
 
     const data = await res.json();
     if (!res.ok || data.success === false) {
@@ -47,7 +58,25 @@ export async function apiRequest(endpoint, options = {}) {
     }
     return data;
   } catch (err) {
+    clearTimeout(timeoutId);
+    if (err.name === 'AbortError') {
+      console.warn(`API call timeout for ${endpoint} after ${timeoutMs}ms`);
+      throw new Error(`Máy chủ không phản hồi (timeout ${Math.round(timeoutMs/1000)}s). Backend có thể đang khởi động, vui lòng thử lại sau 30 giây.`);
+    }
     console.warn(`API call failed for ${endpoint}:`, err.message);
     throw err;
+  }
+}
+
+// Quick health check - uses a short timeout to detect if backend is alive
+export async function checkBackendHealth() {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch(`${API_BASE_URL}/health`, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    return res.ok;
+  } catch {
+    return false;
   }
 }

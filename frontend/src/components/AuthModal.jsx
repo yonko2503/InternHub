@@ -10,12 +10,15 @@ import {
   GraduationCap, 
   Sparkles, 
   AlertCircle,
-  ArrowRight
+  ArrowRight,
+  Wifi,
+  WifiOff,
+  Loader2
 } from 'lucide-react';
 import Logo from './Logo';
 
 export default function AuthModal({ initialMode = 'login', onClose }) {
-  const { login, register, quickLogin } = useAuth();
+  const { login, register, quickLogin, backendStatus } = useAuth();
   const [mode, setMode] = useState(initialMode); // 'login' or 'register'
   const [registerRole, setRegisterRole] = useState('ROLE_STUDENT'); // or 'ROLE_COMPANY'
 
@@ -86,6 +89,22 @@ export default function AuthModal({ initialMode = 'login', onClose }) {
               <AlertCircle size={16} /> {error}
             </div>
           )}
+
+          {/* Backend Status Indicator */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '8px',
+            padding: '8px 12px', borderRadius: '8px', marginBottom: '12px', fontSize: '12px',
+            background: backendStatus === 'online' ? 'rgba(34,197,94,0.1)' : backendStatus === 'offline' ? 'rgba(239,68,68,0.1)' : 'rgba(234,179,8,0.1)',
+            color: backendStatus === 'online' ? '#16a34a' : backendStatus === 'offline' ? '#dc2626' : '#ca8a04',
+            border: `1px solid ${backendStatus === 'online' ? 'rgba(34,197,94,0.2)' : backendStatus === 'offline' ? 'rgba(239,68,68,0.2)' : 'rgba(234,179,8,0.2)'}`
+          }}>
+            {backendStatus === 'online' ? <Wifi size={14} /> : backendStatus === 'offline' ? <WifiOff size={14} /> : <Loader2 size={14} style={{animation: 'spin 1s linear infinite'}} />}
+            <span>
+              {backendStatus === 'online' ? 'Đã kết nối máy chủ - dữ liệu đồng bộ MySQL' :
+               backendStatus === 'offline' ? 'Máy chủ offline - dữ liệu chỉ lưu cục bộ trên trình duyệt này' :
+               'Đang kiểm tra kết nối máy chủ...'}
+            </span>
+          </div>
 
           {/* Mode Switch Tabs */}
           <div className="auth-tab-switch">

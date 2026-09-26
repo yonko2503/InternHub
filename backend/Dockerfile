@@ -20,6 +20,9 @@ USER spring:spring
 # Copy built jar from build stage
 COPY --from=build /app/target/*.jar app.jar
 
-EXPOSE 8080
+# Render sets PORT env variable (typically 10000)
+# Spring Boot reads it via server.port=${PORT:8080} in application.properties
+EXPOSE ${PORT:-8080}
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Pass PORT explicitly as JVM arg to guarantee correct port binding
+ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-8080} -jar app.jar"]

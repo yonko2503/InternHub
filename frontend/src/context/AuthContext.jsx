@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { apiRequest, setAuthToken, setStoredUser, getStoredUser, getAuthToken } from '../api/client';
+import { apiRequest, setAuthToken, setStoredUser, getStoredUser, getAuthToken, checkBackendHealth } from '../api/client';
 import { INITIAL_USERS, INITIAL_JOBS, INITIAL_APPLICATIONS, INITIAL_NOTIFICATIONS, INITIAL_SKILLS } from '../api/mockData';
 
 const safeGetStorage = (key, fallback) => {
@@ -120,6 +120,7 @@ export const AuthProvider = ({ children }) => {
   const [allUsers, setAllUsers] = useState(() => repairUsersData(safeGetStorage('internhub_all_users', INITIAL_USERS)));
   const [skillsList, setSkillsList] = useState(() => safeGetStorage('internhub_skills', INITIAL_SKILLS));
   const [isLiveBackend, setIsLiveBackend] = useState(false);
+  const [backendStatus, setBackendStatus] = useState('checking'); // 'checking' | 'online' | 'offline'
 
   // Sync state changes to localStorage
   useEffect(() => {
@@ -233,20 +234,55 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Check if live Spring Boot backend is reachable
+  // Check backend health on mount
   useEffect(() => {
-    fetchBackendJobs();
-    fetchBackendCompanies();
-    if (user?.role) {
-      fetchUserData(user.role);
+    const checkHealth = async () => {
+      setBackendStatus('checking');
+      const isAlive = await checkBackendHealth();
+      setBackendStatus(isAlive ? 'online' : 'offline');
+      if (isAlive) {
+        setIsLiveBackend(true);
+        console.log('✅ Backend is ONLINE - data will sync with MySQL');
+      } else {
+        console.warn('⚠️ Backend is OFFLINE - using local data only');
+      }
+    };
+    checkHealth();
+  }, []);
+
+  // Fetch data when backend is confirmed online
+  useEffect(() => {
+    if (backendStatus === 'online') {
+      fetchBackendJobs();
+      fetchBackendCompanies();
+      if (user?.role) {
+        fetchUserData(user.role);
+      }
     }
-  }, [user?.role, token]);
+  }, [backendStatus, user?.role, token]);
 
   const login = async (username, password) => {
+    // If backend is known to be offline, skip API call and use local fallback immediately
+    if (backendStatus === 'offline') {
+      console.warn('Backend offline - using local login fallback');
+      const found = allUsers.find(
+        (u) => (u.username === username || u.email === username)
+      );
+      if (found) {
+        setUser(found);
+        setToken('demo-token-' + found.id);
+        setAuthToken('demo-token-' + found.id);
+        setStoredUser(found);
+        return { success: true, offline: true };
+      }
+      throw new Error('Backend đang offline. Không tìm thấy tài khoản trong dữ liệu cục bộ.');
+    }
+
     try {
       const res = await apiRequest('/auth/login', {
         method: 'POST',
         body: JSON.stringify({ username, password }),
+        timeoutMs: 20000, // 20s timeout for login (Render cold start can take 15-20s)
       });
       if (res && res.success && res.data) {
         const authData = res.data;
@@ -262,6 +298,7 @@ export const AuthProvider = ({ children }) => {
         setToken(authData.accessToken);
         setAuthToken(authData.accessToken);
         setStoredUser(loggedUser);
+        setBackendStatus('online');
 
         // Fetch real profile data and applications from database
         fetchUserData(authData.role);
@@ -269,7 +306,7 @@ export const AuthProvider = ({ children }) => {
         return { success: true };
       }
     } catch (err) {
-      // Fallback to mock users for offline resiliency
+      // If timeout or network error, try local fallback
       const found = allUsers.find(
         (u) => (u.username === username || u.email === username)
       );
@@ -278,7 +315,8 @@ export const AuthProvider = ({ children }) => {
         setToken('demo-token-' + found.id);
         setAuthToken('demo-token-' + found.id);
         setStoredUser(found);
-        return { success: true };
+        setBackendStatus('offline');
+        return { success: true, offline: true };
       }
       throw new Error(err.message || 'Tên đăng nhập hoặc mật khẩu không chính xác!');
     }
@@ -864,6 +902,7 @@ export const AuthProvider = ({ children }) => {
         notifications,
         allUsers,
         isLiveBackend,
+        backendStatus,
         login,
         register,
         logout,
